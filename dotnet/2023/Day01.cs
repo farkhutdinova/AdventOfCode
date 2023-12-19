@@ -1,4 +1,4 @@
-internal sealed class Day1Task1 : DayBase
+internal sealed class Day01 : DayBase
 {
     private readonly Dictionary<string, int> _digitWords3 = new()
     {
@@ -19,7 +19,7 @@ internal sealed class Day1Task1 : DayBase
         {"eight",8}
     };
 
-    public Day1Task1() : base(1)
+    public Day01() : base(1)
     {
     }
 

@@ -9,6 +9,7 @@ internal abstract class DayBase
 
     public DayBase(int dayNumber)
     {
+        Number = dayNumber;
         string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.Parent!.FullName;
         _task1Path = Path.Combine(projectDirectory, _year, "day" + dayNumber, "input1.txt");
         _task1PathTest = Path.Combine(projectDirectory, _year, "day" + dayNumber, "test1.txt");
@@ -16,9 +17,15 @@ internal abstract class DayBase
         _task2PathTest = Path.Combine(projectDirectory, _year, "day" + dayNumber, "test2.txt");
     }
 
+    public int Number { get; }
+
+    public string GetTestTask1()
+    {
+        return SolveTask1(_task1PathTest);
+    }
+
     public string GetInputTask1()
     {
-        // return SolveTask1(_task1PathTest);
         return SolveTask1(_task1Path);
     }
 
