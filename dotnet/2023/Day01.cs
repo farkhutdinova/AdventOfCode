@@ -1,3 +1,5 @@
+namespace dotnet._2023;
+
 internal sealed class Day01 : DayBase
 {
     private readonly Dictionary<string, int> _digitWords3 = new()

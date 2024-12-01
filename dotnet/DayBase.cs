@@ -1,16 +1,18 @@
-internal abstract class DayBase
+namespace dotnet;
+
+public abstract class DayBase
 {
-    private readonly string _year = "2023";
+    private readonly string _year = "2024";
 
     private readonly string _task1Path;
     private readonly string _task1PathTest;
     private readonly string _task2Path;
     private readonly string _task2PathTest;
 
-    public DayBase(int dayNumber)
+    protected DayBase(int dayNumber)
     {
         Number = dayNumber;
-        string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.Parent!.FullName;
+        var projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.Parent!.FullName;
         _task1Path = Path.Combine(projectDirectory, _year, "day" + dayNumber, "input1.txt");
         _task1PathTest = Path.Combine(projectDirectory, _year, "day" + dayNumber, "test1.txt");
         _task2Path = Path.Combine(projectDirectory, _year, "day" + dayNumber, "input2.txt");
@@ -23,6 +25,11 @@ internal abstract class DayBase
     {
         return SolveTask1(_task1PathTest);
     }
+    
+    public string GetTestTask2()
+    {
+        return SolveTask2(_task2PathTest);
+    }
 
     public string GetInputTask1()
     {
@@ -31,7 +38,6 @@ internal abstract class DayBase
 
     public string GetInputTask2()
     {
-        // return SolveTask2(_task2PathTest);
         return SolveTask2(_task2Path);
     }
 
