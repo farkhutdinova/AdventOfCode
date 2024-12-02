@@ -25,7 +25,7 @@ public abstract class DayBase
     {
         return SolveTask1(_task1PathTest);
     }
-    
+
     public string GetTestTask2()
     {
         return SolveTask2(_task2PathTest);

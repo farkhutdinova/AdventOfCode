@@ -31,7 +31,7 @@ internal sealed class Day01() : DayBase(1)
         return sum.ToString();
     }
 
-    private Tuple<List<int>, List<int>> ReadLists(string inputPath)
+    private static Tuple<List<int>, List<int>> ReadLists(string inputPath)
     {
         var list1 = new List<int>();
         var list2 = new List<int>();
