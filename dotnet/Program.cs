@@ -1,6 +1,6 @@
 ﻿using dotnet._2024;
 
-var day = new Day03();
+var day = new Day04();
 Console.WriteLine("Test part 1: " + day.GetTestTask1());
 Console.WriteLine($"the answer for task 1 of the day {day.Number} is:");
 Console.WriteLine(day.GetInputTask1());
