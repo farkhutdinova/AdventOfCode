@@ -165,5 +165,3 @@ public sealed class Day04() : DayBase(4)
         return result;
     }
 }
-
-internal record struct Coordinate(int Row, int Column);
