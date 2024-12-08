@@ -19,6 +19,25 @@ internal static class Helper
         return data.ToArray();
     }
 
+    public static HashSet<Tuple<T, T>> FindPairs<T>(IList<T> items)
+    {
+        var pairs = new HashSet<Tuple<T, T>>();
+        for (var i = 0; i < items.Count; i++)
+        {
+            for (var j = i + 1; j < items.Count; j++)
+            {
+                pairs.Add(new Tuple<T, T>(items[i], items[j]));
+            }
+        }
+        return pairs;
+    }
+
+    public static bool WithinRange(Coordinate coordinate, int maxRow, int maxColumn)
+    {
+        return coordinate.Row < maxRow && coordinate.Row >= 0 &&
+               coordinate.Column < maxColumn && coordinate.Column >= 0;
+    }
+
     public static char[][] ReadToGridAndFindValue(string inputPath, SearchValues<char> search, out Coordinate index)
     {
         var foundIndex = false;
