@@ -4,8 +4,8 @@ internal sealed class Day07() : DayBase(7)
 {
     protected override string SolveTask1(string inputPath)
     {
-        var count = 0;
-        
+        var validResults = 0L;
+
         using var reader = new StreamReader(inputPath);
 
         while (!reader.EndOfStream)
@@ -15,15 +15,39 @@ internal sealed class Day07() : DayBase(7)
             var combinations = GetCombinations(numbers.Length - 1);
             foreach (var combination in combinations)
             {
-                Console.WriteLine("Test value " + testResult);
-                foreach (var command in combination)
+                var result = 0L;
+                for (var i = 0; i < numbers.Length; i++)
                 {
-                    Console.WriteLine($"{command.Key}: {command.Value}");
+                    result = ApplyCommand(result, numbers[i], i - 1 < 0 ? null : combination.Single(c => c.Index == i  - 1).Command);
+                }
+
+                if (result == testResult)
+                {
+                    // Console.WriteLine("Test value " + testResult);
+                    // Console.WriteLine("Result " + result);
+                    // foreach (var c in combination)
+                    //     Console.Write($"{c.Command} ");
+                    // Console.WriteLine();
+
+                    validResults += result;
+                    break;
                 }
             }
         }
         
-        return count.ToString();
+        return validResults.ToString();
+    }
+
+    private static long ApplyCommand(long prevResult, long number, Command? command)
+    {
+        if (command is null) return number;
+
+        return command switch
+        {
+            Command.Add => prevResult + number,
+            Command.Multiply => prevResult * number,
+            Command.Concatenate => long.Parse(prevResult.ToString() + number),
+        };
     }
 
     private static (long TestResult, int[] Numbers) ParseLine(string line)
@@ -34,45 +58,55 @@ internal sealed class Day07() : DayBase(7)
         return (testResult, numbers);
     }
 
-    private static HashSet<Dictionary<long, Command>> GetCombinations(int amount)
+    private static List<List<(int Index, Command Command)>> GetCombinations(int amount, bool includeConcatenation = false)
     {
-        var combinations = new HashSet<Dictionary<long, Command>>(new DictionaryComparer<long, Command>());
-        
         var indices = Enumerable.Range(0, amount).ToArray();
-        Command[] commands = [Command.Add, Command.Multiply];
+        Command[] commands = includeConcatenation
+            ? [Command.Add, Command.Multiply, Command.Concatenate]
+            : [Command.Add, Command.Multiply];
 
         var cartesianProduct = from i in indices
             from c in commands
             select (i, c);
 
-        var groupedByIndex = cartesianProduct.GroupBy(pair => pair.i).ToList();
+        var groups = cartesianProduct
+            .GroupBy(pair => pair.i)
+            .Select(group => group.ToList())
+            .ToList();
 
-        var uniqueCombination = new Dictionary<long, Command>();
+        var combinations = Helper.FindCombinations(groups, 0, []);
 
-        foreach (var group in groupedByIndex)
-        {
-            foreach (var element in group)
-            {
-                uniqueCombination.Clear();
-
-                uniqueCombination.TryAdd(element.Item1, element.Item2);
-                foreach (var otherGroup in groupedByIndex.Where(g => g.Key != group.Key))
-                {
-                    foreach (var otherElement in otherGroup)
-                    {
-                        uniqueCombination.TryAdd(otherElement.Item1, otherElement.Item2);
-                    }
-                }
-                combinations.Add(uniqueCombination.OrderBy(pair => pair.Key).ToDictionary(pair => pair.Key, pair => pair.Value));
-            }
-        }
-        
         return combinations;
     }
 
     protected override string SolveTask2(string inputPath)
     {
-        throw new NotImplementedException();
+        var validResults = 0L;
+
+        using var reader = new StreamReader(inputPath);
+
+        while (!reader.EndOfStream)
+        {
+            var line = reader.ReadLine();
+            var (testResult, numbers) = ParseLine(line!);
+            var combinations = GetCombinations(numbers.Length - 1, true);
+            foreach (var combination in combinations)
+            {
+                var result = 0L;
+                for (var i = 0; i < numbers.Length; i++)
+                {
+                    result = ApplyCommand(result, numbers[i], i - 1 < 0 ? null : combination.Single(c => c.Index == i  - 1).Command);
+                }
+
+                if (result == testResult)
+                {
+                    validResults += result;
+                    break;
+                }
+            }
+        }
+        
+        return validResults.ToString();
     }
 }
 
@@ -80,39 +114,5 @@ internal enum Command
 {
     Add,
     Multiply,
-}
-
-internal class DictionaryComparer<TKey, TValue> : IEqualityComparer<Dictionary<TKey, TValue>> where TKey : notnull
-{
-    public bool Equals(Dictionary<TKey, TValue>? x, Dictionary<TKey, TValue>? y)
-    {
-        if (x == null || y == null)
-            return false;
-
-        if (x.Count != y.Count)
-            return false;
-
-        foreach (var kvp in x)
-        {
-            if (!y.TryGetValue(kvp.Key, out var value) || !EqualityComparer<TValue>.Default.Equals(kvp.Value, value))
-                return false;
-        }
-
-        return true;
-    }
-
-    public int GetHashCode(Dictionary<TKey, TValue>? obj)
-    {
-        if (obj == null)
-            return 0;
-
-        int hash = 17;
-        foreach (var kvp in obj)
-        {
-            hash = hash * 31 + EqualityComparer<TKey>.Default.GetHashCode(kvp.Key);
-            hash = hash * 31 + EqualityComparer<TValue>.Default.GetHashCode(kvp.Value!);
-        }
-
-        return hash;
-    }
+    Concatenate,
 }

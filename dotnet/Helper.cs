@@ -32,6 +32,25 @@ internal static class Helper
         return pairs;
     }
 
+    public static List<List<T>> FindCombinations<T>(List<List<T>> groups, int depth, List<T> current)
+    {
+        var combinations = new List<List<T>>();
+        if (depth == groups.Count)
+        {
+            combinations.Add([..current]);
+            return combinations;
+        }
+
+        foreach (var item in groups[depth])
+        {
+            current.Add(item);
+            combinations.AddRange(FindCombinations(groups, depth + 1, current));
+            current.RemoveAt(current.Count - 1);
+        }
+        
+        return combinations;
+    }
+
     public static bool WithinRange(Coordinate coordinate, int maxRow, int maxColumn)
     {
         return coordinate.Row < maxRow && coordinate.Row >= 0 &&
