@@ -72,7 +72,7 @@ internal sealed class Day09() : DayBase(9)
         var checksum = 0L;
         for (var i = 0; i < compacted.Length; i++)
         {
-            if (compacted[i] == -1) break;
+            if (compacted[i] == -1) continue;
             checksum += i * compacted[i];
         }
         return checksum;
@@ -80,6 +80,94 @@ internal sealed class Day09() : DayBase(9)
 
     protected override string SolveTask2(string inputPath)
     {
-        throw new NotImplementedException();
+        using var reader = new StreamReader(inputPath);
+
+        var diskMap = reader.ReadLine().AsSpan();
+
+        var blocks = ParseWholeBlocks(diskMap);
+
+        var compacted = CompactByWholeBlocks(blocks);
+
+        var checksum = CalculateChecksum(compacted.SelectMany(b => Enumerable.Repeat(b.Value, b.Length)).ToArray());
+
+        return checksum.ToString();
+    }
+
+    private static Block[] ParseWholeBlocks(ReadOnlySpan<char> diskMap)
+    {
+        var blocks = new List<Block>();
+
+        var isFile = true;
+        var i = 0;
+        var index = 0;
+        foreach (var c in diskMap)
+        {
+            var count = int.Parse(c.ToString());
+
+            if (isFile)
+            {
+                var fileBlock = new Block(i, count, index);
+                if (fileBlock.Length > 0) blocks.Add(fileBlock);
+                i++;
+            }
+            else
+            {
+                var emptyBlock = new Block(-1, count, index);
+                if (emptyBlock.Length > 0) blocks.Add(emptyBlock);
+            }
+
+            isFile = !isFile;
+            index++;
+        }
+
+        return blocks.ToArray();
+    }
+
+    private static Block[] CompactByWholeBlocks(Block[] blocks)
+    {
+        var compacted = blocks.ToList();
+
+        var i = compacted.Count - 1;
+        var emptyBlocks = blocks.TakeWhile((_, index) => index < i).Where(b => b is { Value: -1, Length: > 0 }).ToArray();
+        var current = blocks[i];
+        var gapToFill = emptyBlocks.FirstOrDefault(b => b.Length >= current.Length);
+        while (gapToFill != null)
+        {
+            var currenIndex = compacted.IndexOf(current);
+
+            if (gapToFill.Length == current.Length)
+            {
+                compacted[gapToFill.Index] = current with { Index = gapToFill.Index };
+                compacted[current.Index] = gapToFill with { Index = current.Index };
+                i--;
+            }
+            else
+            {
+                compacted[gapToFill.Index] = current;
+                compacted.Insert(gapToFill.Index + 1, gapToFill with { Length = gapToFill.Length - current.Length });
+                compacted[currenIndex + 1] = gapToFill with { Length = current.Length };
+
+                for (var k = 0; k < compacted.Count; k++)
+                {
+                    compacted[k] = compacted[k] with { Index = k };
+                }
+                i = compacted.Count - 2;
+            }
+
+            emptyBlocks = compacted.TakeWhile((_, index) => index < i).Where(b => b is { Value: -1, Length: > 0 }).ToArray();
+
+            gapToFill = null;
+            for (var j = i; j > 0; j--)
+            {
+                if (compacted[j].Value == -1) continue;
+                current = compacted[j];
+                gapToFill = emptyBlocks.FirstOrDefault(b => b.Length >= current.Length);
+                if (gapToFill != null) break;
+            }
+        }
+
+        return compacted.ToArray();
     }
 }
+
+internal record Block(int Value, int Length, int Index);
