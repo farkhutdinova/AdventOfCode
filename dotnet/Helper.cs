@@ -88,7 +88,7 @@ internal static class Helper
     }
 }
 
-internal record struct Coordinate(int Row, int Column)
+internal readonly record struct Coordinate(int Row, int Column)
 {
     public Coordinate Move(Direction direction)
     {
