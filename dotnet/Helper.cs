@@ -98,7 +98,7 @@ internal readonly record struct Coordinate(int Row, int Column)
 
 internal static class ArrayExtensions
 {
-    public static char At(this char[][] array, Coordinate coordinate) => array[coordinate.Row][coordinate.Column];
+    public static T At<T>(this T[][] array, Coordinate coordinate) => array[coordinate.Row][coordinate.Column];
 }
 
 internal record Direction(int Horizontal, int Vertical)
