@@ -19,6 +19,21 @@ internal static class Helper
         return data.ToArray();
     }
 
+    public static List<long> ReadToList(string inputPath)
+    {
+        var result = new List<long>();
+        using var reader = new StreamReader(inputPath);
+        var data = reader.ReadToEnd().AsSpan();
+        var tokens = data.Split(' ');
+        while (tokens.MoveNext())
+        {
+            var stone = long.Parse(data[tokens.Current]);
+            result.Add(stone);
+        }
+
+        return result;
+    }
+
     public static HashSet<Tuple<T, T>> FindPairs<T>(IList<T> items)
     {
         var pairs = new HashSet<Tuple<T, T>>();
@@ -140,4 +155,24 @@ internal static class Directions
     public static readonly Direction Left = new(0, -1);
 
     public static readonly Direction Right = new(0, 1);
+}
+
+internal static class LongExtensions
+{
+    public static bool HasEvenDigits(this long stone, out (string, string) parts)
+    {
+        var digits = stone.ToString().AsSpan();
+        if (digits.Length % 2 == 0)
+        {
+            var middle = digits.Length / 2;
+            var part1 = digits[..middle];
+            var part2 = digits[middle..];
+            parts = (part1.ToString(), part2.ToString());
+            return true;
+        }
+        parts = default;
+        return false;
+    }
+
+    public static long DigitsCount(this long value) => (int)Math.Log10(value) + 1;
 }
