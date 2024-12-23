@@ -66,7 +66,7 @@ internal static class Helper
         return combinations;
     }
 
-    public static bool WithinRange(Coordinate coordinate, int maxRow, int maxColumn)
+    public static bool WithinRange(this Coordinate coordinate, int maxRow, int maxColumn)
     {
         return coordinate.Row < maxRow && coordinate.Row >= 0 &&
                coordinate.Column < maxColumn && coordinate.Column >= 0;
