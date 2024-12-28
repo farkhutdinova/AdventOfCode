@@ -103,6 +103,8 @@ internal static class Helper
     }
 }
 
+internal readonly record struct Point(int X, int Y);
+
 internal readonly record struct Coordinate(int Row, int Column)
 {
     public Coordinate Move(Direction direction)
