@@ -67,6 +67,20 @@ internal partial class Day14() : DayBase(14)
             var endY = newY == 0 || MoveY >= 0 ? newY : Height + newY;
             return new Point(endX, endY);
         }
+        
+        public Point Step()
+        {
+            var newX = StartX + MoveX;
+            var endX = newX < 0 ? Width + newX : newX >= Width ? newX - Width : newX;
+
+            var newY = StartY + MoveY;
+            var endY = newY < 0 ? Height + newY : newY >= Height ? newY - Height : newY;
+
+            return new Point(endX, endY);
+        }
+
+        public int StartY { get; set; } = StartY;
+        public int StartX { get; set; } = StartX;
     }
 
     private record Quadrant(int StartX, int EndX, int StartY, int EndY)
@@ -83,6 +97,46 @@ internal partial class Day14() : DayBase(14)
 
     protected override string SolveTask2(string inputPath)
     {
-        throw new NotImplementedException();
+        var robotsList = new List<Robot>();
+
+        using var reader = new StreamReader(inputPath);
+
+        while (!reader.EndOfStream)
+        {
+            var robot = Robot.Parse(reader.ReadLine()!);
+            robotsList.Add(robot);
+        }
+
+        var robots = robotsList.ToArray();
+        var robotCount = robots.Length;
+
+        var t = 0;
+        while (true)
+        {
+            t++;
+            var positions = new bool[Width, Height];
+
+            for (var i = 0; i < robotCount; i++)
+            {
+                var endPosition = robots[i].Step();
+                positions[endPosition.X, endPosition.Y] = true;
+                robots[i].StartX = endPosition.X;
+                robots[i].StartY = endPosition.Y;
+            }
+
+            if ((t - 70) % 101 == 0 || (t - 19) % 103 == 0) // 70 is time when horizontal structure first noticed, 19 is for vertical
+            {
+                Console.WriteLine(t);
+
+                for (var i = 0; i < Width; i++)
+                {
+                    for (var j = 0; j < Height; j++)
+                        Console.Write(positions[i, j] ? "#" : " ");
+                    Console.WriteLine();
+                }
+            }
+        }
+
+        return "0";
     }
 }
