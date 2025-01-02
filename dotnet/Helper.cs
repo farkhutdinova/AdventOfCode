@@ -116,6 +116,23 @@ internal readonly record struct Coordinate(int Row, int Column)
 internal static class ArrayExtensions
 {
     public static T At<T>(this T[][] array, Coordinate coordinate) => array[coordinate.Row][coordinate.Column];
+
+    public static T[,] To2DArray<T>(this T[][] array)
+    {
+        var rows = array.Length;
+        var cols = array[0].Length;
+
+        var twoDArray = new T[rows, cols];
+
+        for (var i = 0; i < rows; i++)
+        {
+            for (var j = 0; j < cols; j++)
+            {
+                twoDArray[i, j] = array[i][j];
+            }
+        }
+        return twoDArray;
+    }
 }
 
 internal record Direction(int Horizontal, int Vertical)
